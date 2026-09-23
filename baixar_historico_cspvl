@@ -1,0 +1,241 @@
+#!/usr/bin/env python3
+"""Coleta auditável dos relatórios NOAA da estação CSPVL — sem NASA.
+
+Cada registro é criado apenas quando existe uma linha diária válida no arquivo
+original publicado pelo CSPVL. A coluna ``linha_original`` permite conferir
+qualquer valor diretamente contra o relatório mensal baixado.
+"""
+
+from __future__ import annotations
+
+import argparse
+import calendar
+import csv
+import hashlib
+import re
+import ssl
+import sys
+import time
+from dataclasses import dataclass
+from datetime import date, datetime
+from pathlib import Path
+from typing import Iterable
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
+
+
+URL_RELATORIO = "https://cspvl.com.br/estamet/NOAA/NOAA-{ano}-{mes:02d}.txt"
+URL_TABULAR = "https://cspvl.com.br/estamet/tabular.html?report=NOAA/NOAA-{ano}-{mes:02d}.txt"
+PASTA = Path(__file__).resolve().parent / "historico_rampa_cspvl_v6"
+TIMEOUT = 30
+PAUSA = 0.25
+NUMERO = re.compile(r"^[+-]?\d+(?:[.,]\d+)?$")
+HORA = re.compile(r"^(?:[01]\d|2[0-3]):[0-5]\d$|^24:00$")
+
+# Esta ordem é a ordem publicada no relatório NOAA/WeeWX do CSPVL.
+COLUNAS_NOAA = (
+    "dia", "temperatura_media_c", "temperatura_maxima_c", "hora_maxima",
+    "temperatura_minima_c", "hora_minima", "graus_aquecimento",
+    "graus_resfriamento", "chuva_mm", "vento_medio_kmh", "vento_maximo_kmh",
+    "hora_vento_maximo", "direcao_vento_dominante_graus",
+)
+INDICES_NUMERICOS = (1, 2, 4, 6, 7, 8, 9, 10, 12)
+INDICES_HORAS = (3, 5, 11)
+
+
+def contexto_https() -> ssl.SSLContext:
+    """Usa os certificados Windows, mantendo a validação de host/cadeia."""
+    contexto = ssl.create_default_context()
+    if hasattr(ssl, "VERIFY_X509_STRICT"):
+        contexto.verify_flags &= ~ssl.VERIFY_X509_STRICT
+    if sys.platform == "win32":
+        for loja in ("ROOT", "CA"):
+            try:
+                certificados = ssl.enum_certificates(loja)
+            except OSError:
+                continue
+            for certificado, codificacao, _ in certificados:
+                if codificacao == "x509_asn":
+                    try:
+                        contexto.load_verify_locations(cadata=ssl.DER_cert_to_PEM_cert(certificado))
+                    except ssl.SSLError:
+                        pass
+    return contexto
+
+
+HTTPS = contexto_https()
+
+
+@dataclass
+class Mes:
+    ano: int
+    mes: int
+    situacao: str
+    linhas: dict[int, tuple[list[str], str]]
+    url: str
+    sha256: str = ""
+    detalhe: str = ""
+
+
+def argumentos() -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="Coletor CSPVL V6, somente dados publicados pela estação.")
+    p.add_argument("--inicio", default="2024-01-01")
+    p.add_argument("--fim", default=date.today().isoformat())
+    p.add_argument("--offline", action="store_true", help="Valida relatórios já salvos nesta pasta, sem acessar a internet.")
+    p.add_argument("--pasta-relatorios", type=Path, default=None,
+                   help="Com --offline, use relatórios .txt de outra pasta (opcional).")
+    return p.parse_args()
+
+
+def ler_data(valor: str, nome: str) -> date:
+    try:
+        return datetime.strptime(valor, "%Y-%m-%d").date()
+    except ValueError as erro:
+        raise SystemExit(f"{nome} deve usar AAAA-MM-DD.") from erro
+
+
+def meses(inicio: date, fim: date) -> Iterable[tuple[int, int]]:
+    ano, mes = inicio.year, inicio.month
+    while (ano, mes) <= (fim.year, fim.month):
+        yield ano, mes
+        ano, mes = (ano + 1, 1) if mes == 12 else (ano, mes + 1)
+
+
+def linha_valida(campos: list[str], ultimo_dia: int) -> bool:
+    """Aceita somente as 13 posições previstas pelo relatório publicado."""
+    if len(campos) != 13 or not campos[0].isdigit() or not 1 <= int(campos[0]) <= ultimo_dia:
+        return False
+    return (all(NUMERO.fullmatch(campos[i]) for i in INDICES_NUMERICOS)
+            and all(HORA.fullmatch(campos[i]) for i in INDICES_HORAS))
+
+
+def analisar(texto: str, ano: int, mes: int) -> tuple[dict[int, tuple[list[str], str]], int, bool]:
+    """Retorna linhas válidas, candidatas recusadas e se o cabeçalho NOAA confere."""
+    cabecalho_ok = ("MONTHLY CLIMATOLOGICAL SUMMARY" in texto
+                    and "DAY   TEMP   HIGH" in texto
+                    and "RAIN" in texto
+                    and "WIND" in texto)
+    ultimo = calendar.monthrange(ano, mes)[1]
+    encontrados: dict[int, tuple[list[str], str]] = {}
+    recusadas = 0
+    for linha in texto.splitlines():
+        campos = linha.strip().split()
+        if not campos or not campos[0].isdigit():
+            continue
+        if 1 <= int(campos[0]) <= ultimo:
+            if linha_valida(campos, ultimo):
+                # Não converte nem desloca: armazena os 13 tokens exatamente na ordem fonte.
+                encontrados[int(campos[0])] = (campos, linha.rstrip())
+            elif len(campos) > 1:
+                recusadas += 1
+    return encontrados, recusadas, cabecalho_ok
+
+
+def salvar(caminho: Path, texto: str) -> None:
+    caminho.parent.mkdir(parents=True, exist_ok=True)
+    caminho.write_text(texto, encoding="utf-8")
+
+
+def obter_mes(ano: int, mes: int, offline: bool, pasta_relatorios: Path | None) -> Mes:
+    url = URL_RELATORIO.format(ano=ano, mes=mes)
+    arquivo = PASTA / "relatorios_originais" / f"NOAA-{ano}-{mes:02d}.txt"
+    if offline:
+        if pasta_relatorios is not None:
+            arquivo = pasta_relatorios / f"{ano}-{mes:02d}.txt"
+        if not arquivo.exists():
+            return Mes(ano, mes, "sem_arquivo_local", {}, url, detalhe="relatório local não encontrado")
+        texto = arquivo.read_text(encoding="utf-8", errors="replace")
+    else:
+        try:
+            pedido = Request(url, headers={"User-Agent": "CSPVL-Coletor-Auditavel-V6/1.0"})
+            with urlopen(pedido, timeout=TIMEOUT, context=HTTPS) as resposta:
+                bruto = resposta.read()
+            texto = bruto.decode("utf-8", errors="replace").replace("\r", "")
+        except HTTPError as erro:
+            return Mes(ano, mes, "sem_relatorio" if erro.code == 404 else "erro_leitura", {}, url, detalhe=f"HTTP {erro.code}")
+        except (URLError, TimeoutError, OSError) as erro:
+            return Mes(ano, mes, "erro_leitura", {}, url, detalhe=f"{type(erro).__name__}: {erro}")
+        salvar(arquivo, texto)
+    linhas, recusadas, cabecalho_ok = analisar(texto, ano, mes)
+    assinatura = hashlib.sha256(texto.encode("utf-8")).hexdigest()
+    if linhas:
+        return Mes(ano, mes, "publicado", linhas, url, assinatura,
+                   f"{recusadas} linha(s) candidata(s) recusada(s)" if recusadas else "")
+    if cabecalho_ok:
+        return Mes(ano, mes, "publicado_sem_dados", {}, url, assinatura, "cabeçalho NOAA válido, sem linhas diárias")
+    return Mes(ano, mes, "erro_leitura", {}, url, assinatura, "formato NOAA não reconhecido")
+
+
+def no_intervalo(ano: int, mes: int, inicio: date, fim: date) -> Iterable[int]:
+    primeiro = inicio.day if (ano, mes) == (inicio.year, inicio.month) else 1
+    ultimo = fim.day if (ano, mes) == (fim.year, fim.month) else calendar.monthrange(ano, mes)[1]
+    return range(primeiro, ultimo + 1)
+
+
+def escrever(resultados: list[Mes], inicio: date, fim: date) -> tuple[int, int]:
+    PASTA.mkdir(parents=True, exist_ok=True)
+    dados = PASTA / "historico_rampa_cspvl_v6.csv"
+    auditoria = PASTA / "auditoria_linhas_cspvl_v6.csv"
+    faltantes = PASTA / "datas_faltantes_cspvl_v6.csv"
+    cabecalho = ["data", *COLUNAS_NOAA[1:], "url_relatorio_original", "url_tabular", "sha256_relatorio", "linha_original"]
+    total = 0
+    with dados.open("w", newline="", encoding="utf-8-sig") as arquivo, auditoria.open("w", newline="", encoding="utf-8-sig") as aud:
+        w, wa = csv.writer(arquivo, delimiter=";"), csv.writer(aud, delimiter=";")
+        w.writerow(cabecalho)
+        wa.writerow(["data", "token_01_dia", "token_02_temp_media", "token_03_temp_max", "token_04_hora_max", "token_05_temp_min", "token_06_hora_min", "token_07_graus_aquecimento", "token_08_graus_resfriamento", "token_09_chuva", "token_10_vento_medio", "token_11_vento_max", "token_12_hora_vento_max", "token_13_direcao", "linha_original", "sha256_relatorio"])
+        for r in resultados:
+            for dia, (campos, linha_original) in sorted(r.linhas.items()):
+                d = date(r.ano, r.mes, dia)
+                if not inicio <= d <= fim:
+                    continue
+                total += 1
+                w.writerow([d.isoformat(), *campos[1:], r.url, URL_TABULAR.format(ano=r.ano, mes=r.mes), r.sha256, linha_original])
+                wa.writerow([d.isoformat(), *campos, linha_original, r.sha256])
+    qtd_faltantes = 0
+    with faltantes.open("w", newline="", encoding="utf-8-sig") as arquivo:
+        w = csv.writer(arquivo, delimiter=";")
+        w.writerow(["data", "motivo", "url_relatorio_original"])
+        for r in resultados:
+            if r.situacao not in {"publicado", "publicado_sem_dados"}:
+                continue
+            for dia in no_intervalo(r.ano, r.mes, inicio, fim):
+                if dia not in r.linhas:
+                    qtd_faltantes += 1
+                    motivo = "relatorio_publicado_sem_dados" if r.situacao == "publicado_sem_dados" else "dia_sem_linha_publicada"
+                    w.writerow([date(r.ano, r.mes, dia).isoformat(), motivo, r.url])
+    return total, qtd_faltantes
+
+
+def main() -> int:
+    args = argumentos()
+    inicio, fim = ler_data(args.inicio, "--inicio"), ler_data(args.fim, "--fim")
+    if fim < inicio:
+        raise SystemExit("--fim não pode ser anterior a --inicio.")
+    hoje = date.today()
+    resultados: list[Mes] = []
+    print("Coletor CSPVL V6 — somente relatórios originais; sem NASA")
+    print(f"Coletando de {inicio:%Y-%m} até {fim:%Y-%m}...")
+    for ano, mes in meses(inicio, fim):
+        if (ano, mes) > (hoje.year, hoje.month):
+            r = Mes(ano, mes, "nao_publicado", {}, "", detalhe="mês futuro")
+        else:
+            r = obter_mes(ano, mes, args.offline, args.pasta_relatorios)
+            if not args.offline:
+                time.sleep(PAUSA)
+        resultados.append(r)
+        print(f"{ano}-{mes:02d}: {len(r.linhas)} dia(s) | {r.situacao}" + (f" — {r.detalhe}" if r.detalhe else ""))
+    total, faltam = escrever(resultados, inicio, fim)
+    resumo = ["COLETA CSPVL V6 — SEM NASA", f"Período: {inicio} a {fim}", f"Linhas CSPVL extraídas: {total}", f"Datas sem linha em relatórios publicados: {faltam}", "", "Ordem oficial: DAY, MEAN TEMP, HIGH, TIME, LOW, TIME, HEAT DAYS, COOL DAYS, RAIN, AVG WIND SPEED, HIGH, TIME, DOM DIR.", "A coluna linha_original permite comparar diretamente cada registro com o arquivo NOAA original.", ""]
+    for r in resultados:
+        resumo.append(f"{r.ano}-{r.mes:02d}: {r.situacao}; {len(r.linhas)} linha(s). {r.detalhe}".rstrip())
+    salvar(PASTA / "resumo_coleta_v6.txt", "\n".join(resumo) + "\n")
+    print(f"\nConcluído. {total} linhas CSPVL em: {PASTA}")
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        print("\nInterrompido.", file=sys.stderr)
+        raise SystemExit(130)

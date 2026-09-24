@@ -1,0 +1,29 @@
+{% extends "ItaqueriAero/base.html" %}
+
+    {% block conteudo %}
+        <h1>{{local.nome}}</h1>
+        <p>{{ local.cidade }}/{{ local.estado }} - altitude {{ local.altitude_metros}}m</p>
+    
+        <h2>Histórico</h2>
+        <table border="1" cellpadding = "6">
+            <tr>
+                <th>Data</th>
+                <th>Fonte</th>
+                <th>Temp. média</th>
+                <th>Vento médio</th>
+                <th>Vento máximo</th>
+                <th>Direção</th>
+            </tr>
+            {% for registro in historico %}
+            <tr class="{{ registro.classificacao_dia}}">
+                <td>{{ registro.data }}</td>
+                <td>{{ registro.get_fonte_display }}</td>
+                <td>{{ registro.temperatura_media_c }}°C</td>
+                <td>{{ registro.vento_medio_kmh }} km/h</td>
+                <td>{{ registro.vento_maximo_kmh }} km/h</td>
+                <td>{{ registro.direcao_vento_graus }}°</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endblock %}        
+    

@@ -1,0 +1,91 @@
+{% extends "ItaqueriAero/base.html" %}
+{% load static %}
+
+    {% block titulo %}
+        Dashboard - Monitor de Voo Livre
+    {% endblock %}
+    
+    {% block conteudo %}
+
+        <h1>{{ local.nome }}</h1>
+
+        <p>
+            {{ local.cidade }}/{{ local.estado }}
+            - altitude {{ local.altitude_metros }}m
+        </p>
+
+        <div class="seletor-dia">
+
+            <form method="get">
+
+                <label for="registro">
+                    selecionar dia:
+                </label>
+                <select name="registro" id="registro" onchange="this.form.submit()">
+
+                    {% for item in registros %}
+                        <option value="{{ item.id }}"
+                            {% if item.id == registro.id %}selected{% endif %}>
+                            {{ item.data }} - {{ item.get_fonte_display }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <div class="situacao {{ registro.classificacao_dia }}">
+
+            <h2> Situação da Rampa</h2>
+
+            {% if registro.classificacao_dia == "risco" %}
+                
+                <h3>RISCO</h3>
+                <p>As condições atuais apresentam risco para o voo.</p>
+
+            {% elif registro.classificacao_dia == "alerta" %}
+               
+                <h3>ALERTA</h3>
+                <p>As condições exigem atenção antes do voo.</p>
+
+            {% else %}
+                
+                <h3>SEGURO</h3>
+                <p>As condições estão dentro dos parâmetros considerados seguros.</p>
+            {% endif %}
+
+            <p>
+                <strong>Data:</strong>
+                {{ registro.data }}
+            </p>
+
+        </div>
+        
+        <h2>Condições climáticas</h2>
+
+        <div class="dados-climaticos">
+            <div>
+                <strong>Temperatura média</strong>
+                <p>{{ registro.temperatura_media_c }} °C</p>
+            </div>
+
+            <div>
+                <strong>Vento médio</strong>
+                <p>{{ registro.vento_medio_kmh }} km/h</p>
+            </div>
+
+            <div>
+                <strong>vento máximo</strong>
+                <p>{{ registro.vento_maximo_kmh }} km/h</p>
+            </div>
+
+            <div>
+                <strong>Direção do vento</strong>
+                <p>{{ registro.direcao_vento_graus }} °</p>
+            </div>
+
+            <div>
+                <strong>Chuva</strong>
+                <p>{{ registro.chuva_mm }}</p>
+            </div>
+        </div>
+    {% endblock %}

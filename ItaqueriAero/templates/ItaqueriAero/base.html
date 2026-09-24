@@ -1,0 +1,146 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block titulo %} Monitor de Voo Livre{% endblock %}</title>
+        <style>
+            .risco { background-color: #f8d7da;}
+            .alerta { background-color: #fff3cd;}
+            .seguro { background-color: #d4edda;}
+
+            .situacao {
+                min-height: 400px;
+                padding: 30px;
+                margin: 20px 0;
+                border-radius: 10px;
+                background-size: cover;
+                background-position: center;
+                color: white;
+                border: 1px solid #ccc;
+            }
+
+            .situacao.risco{
+                background-image:
+                    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+                    url("/static/ItaqueriAero/imagens/risco.jpg");
+            }
+
+            .situacao.alerta{
+                background-image:
+                    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+                    url("/static/ItaqueriAero/imagens/alerta.jpg");
+            }
+
+            .situacao.seguro{
+                background-image:
+                    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+                    url("/static/ItaqueriAero/imagens/seguro.jpeg");
+            }
+            .situacao h2, .situacao h3 {
+                color: white;
+            }
+
+            .situacao h2 {
+                margin-top: 0;
+            }
+
+            .situacao h3 {
+                font-size: 28px;
+            }
+
+            .dados-climaticos {
+                display: flex;
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+
+            .dados-climaticos div {
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                padding: 15px;
+                min-width: 150px;
+            }
+
+            .dados-climaticos p {
+                font-size: 20px;
+            }
+
+            .situacao img {
+                width: 300px;
+                height: 200px;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+
+            .seletor-dia {
+                margin: 20px 0;
+                padding: 15px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                background-color: #f5f5f5;
+                width: fit-content;
+                margin-left: auto;
+            }
+
+            .seletor-dia label {
+                font-weight: bold;
+                margin-right: 10px;
+            }
+
+            .seletor-dia select {
+                padding: 8px;
+                min-width: 280px;
+                font-size: 15px;
+            }         
+
+            .menu-principal {
+                height: 220px;
+
+                background-image: url("{% static 'ItaqueriAero/imagens/logo.jpg' %}");
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center;
+
+                border-radius: 10px;
+
+                position: relative;
+            }
+
+            .menu-links {
+                position: absolute;
+                top: 20px;
+                left: 30px;
+
+                display: flex;
+                gap: 25px;
+            }
+
+            .menu-links a {
+                color: white;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 20px;
+            }
+
+            .menu-links a:hover {
+                text-decoration: underline;
+            }
+
+        </style>
+    </head>
+    <body>
+        <nav class="menu-principal">
+
+            <div class="menu-links">
+                <a href="{% url 'dashboard' %}">Inicio</a>
+                <a href="{% url 'historico' %}">Historico</a>
+            </div>
+        </nav>
+        <hr>
+
+        {% block conteudo %}
+        {% endblock %}
+    </body>
+</html>

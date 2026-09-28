@@ -8,7 +8,7 @@ from django.shortcuts import render
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MODELO_PATH = BASE_DIR / "modelo_xgboost_novo.pkl"
+MODELO_PATH = BASE_DIR / "modelo" / "modelo_xgboost_novo.pkl"
 
 CSV_PATH = (
     BASE_DIR

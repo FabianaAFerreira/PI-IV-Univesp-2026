@@ -1,0 +1,113 @@
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.menu-principal {
+    height: 250px;
+    background-image: url("imagens/logo.jpg");
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    position: relative;
+}
+
+.menu-links {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+
+    display: flex;
+    gap: 25px;
+}
+
+.menu-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.menu-links a:hover {
+    text-decoration: underline;
+}
+
+.menu-principal h1 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    color: white;
+    font-size: 45px;
+    margin: 0;
+}
+
+.situacao {
+     height: 350px;
+    text-align: center;
+
+    margin: 40px 7px;
+    padding: 30px;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+
+    background-size: cover;
+    background-position: center;
+
+    position: relative;
+}
+
+.situacao.seguro {
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+        url("imagens/seguro.jpeg");
+}
+
+.situacao.alerta {
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+        url("imagens/alerta.jpg");
+}
+
+.situacao.risco {
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+        url("imagens/risco.jpg");
+}
+
+.situacao h2 {
+    margin-bottom: 20px;
+    color: white;
+}
+
+.resultado {
+    font-size: 40px;
+    font-weight: bold;
+    margin: 0;
+    color: white;
+}
+
+.titulo-situacao {
+    text-align: center;
+    margin: 30px 0 20px;
+}
+
+.dados-leitura {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    color: white;
+    font-size:25px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.dados-leitura p {
+    margin: 6px 0;
+}

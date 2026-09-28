@@ -1,0 +1,47 @@
+{% extends 'interface/base.html' %}
+
+{% block titulo %}
+    Início
+{% endblock %}
+
+{% block conteudo %}
+
+    <h2 class="titulo-situacao">Situação atual da rampa</h2>
+
+    {% if situacao == "SEGURO" %}
+
+        <div class="situacao seguro">
+
+    {% elif situacao == "ATENÇÃO" %}
+
+        <div class="situacao alerta">
+
+    {% elif situacao == "INSEGURO" %}
+
+        <div class="situacao risco">
+
+    {% endif %}
+
+        <p class="resultado">
+            {{ situacao }}
+        </p>
+
+        <div class="dados-leitura">
+
+            <p>
+                Data: {{ data }} |
+                Temperatura: {{ temperatura }} °C |
+                Chuva: {{ chuva }} mm
+            </p>
+
+            <p>
+                Vento médio: {{ vento_medio }} km/h |
+                Vento máximo: {{ vento_maximo }} km/h |
+                Direção: {{ direcao_vento }}°
+            </p>
+
+        </div>
+
+    </div>
+
+{% endblock %}

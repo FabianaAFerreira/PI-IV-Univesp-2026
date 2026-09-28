@@ -1,0 +1,41 @@
+COLETA CSPVL V6 — SEM NASA
+Período: 2024-01-01 a 2026-09-27
+Linhas CSPVL extraídas: 206
+Datas sem linha em relatórios publicados: 795
+
+Ordem oficial: DAY, MEAN TEMP, HIGH, TIME, LOW, TIME, HEAT DAYS, COOL DAYS, RAIN, AVG WIND SPEED, HIGH, TIME, DOM DIR.
+A coluna linha_original permite comparar diretamente cada registro com o arquivo NOAA original.
+
+2024-01: publicado; 15 linha(s).
+2024-02: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2024-03: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2024-04: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2024-05: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2024-06: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2024-07: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2024-08: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2024-09: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2024-10: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2024-11: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2024-12: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2025-01: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2025-02: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2025-03: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2025-04: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2025-05: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2025-06: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2025-07: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2025-08: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2025-09: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2025-10: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2025-11: publicado; 1 linha(s).
+2025-12: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2026-01: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2026-02: publicado_sem_dados; 0 linha(s). cabeçalho NOAA válido, sem linhas diárias
+2026-03: publicado; 16 linha(s).
+2026-04: publicado; 30 linha(s).
+2026-05: publicado; 31 linha(s).
+2026-06: publicado; 30 linha(s).
+2026-07: publicado; 26 linha(s).
+2026-08: publicado; 31 linha(s).
+2026-09: publicado; 26 linha(s).

@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+
+    <title>
+        {% block titulo %}
+            Monitor de Voo Livre
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="{% static 'interface/style.css' %}">
+</head>
+
+<body>
+
+    <header class="menu-principal">
+         <h1>ItaqueriAero</h1>
+    </header>
+
+    <main>
+        {% block conteudo %}
+        {% endblock %}
+    </main>
+
+</body>
+</html>

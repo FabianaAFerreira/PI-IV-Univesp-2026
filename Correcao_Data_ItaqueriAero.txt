@@ -1,0 +1,77 @@
+# GUIA DE CORREÇÃO: AUTOMATIZAÇÃO DA DATA E CORREÇÃO DO FRONTEND
+# Projeto: ItaqueriAero (PI4 - UNIVESP)
+# Objetivo: Corrigir o problema da data presa no passado, sincronizando backend e frontend.
+
+Este guia detalha as alterações feitas localmente para automatizar a exibição da data atual do sistema operacional e permitir a correta comunicação com o script assíncrono de tempo real. Três arquivos precisam ser atualizados no repositório.
+
+---
+
+## 1. BACKEND: interface/views.py
+
+O backend estava enviando a data fixa obtida da última linha do arquivo CSV de dados históricos. Substituímos essa leitura estática pela captura em tempo real através da biblioteca nativa do Python.
+
+### Alterações:
+1. No topo do arquivo, certifique-se de importar o módulo `datetime`:
+   ```python
+   from datetime import datetime
+   ```
+
+2. Dentro da função `inicio(request)`, no bloco do dicionário enviado ao `return render(...)`, altere a linha da chave `'data'`:
+   ```python
+   # SUBSTITUIR:
+   # 'data': ultimo['data'],
+   
+   # POR:
+   'data': datetime.now().strftime('%Y-%m-%d'),
+   ```
+
+---
+
+## 2. COMPONENTE HTML: interface/templates/interface/components/dados_leitura.html
+
+O JavaScript do frontend não conseguia injetar a data atualizada porque o elemento visual correspondente na estrutura HTML não possuía um identificador de correspondência (`id`).
+
+### Alterações:
+1. Localize o bloco de leitura da Data (geralmente por volta da linha 6).
+2. Adicione o atributo `id="data"` na tag `<span>` que envolve a variável `{{ data }}`:
+   ```html
+   <!-- SUBSTITUIR: -->
+   <span class="dado-valor">{{ data }}</span>
+   
+   <!-- POR: -->
+   <span class="dado-valor" id="data">{{ data }}</span>
+   ```
+
+---
+
+## 3. FRONTEND JAVASCRIPT: interface/static/interface/js/monitor_clima.js
+
+Ajustamos o script assíncrono para mapear o novo elemento de ID criado no DOM e alteramos o gatilho de inicialização para injetar o dia atual local imediatamente ao renderizar, ordenando a precedência antes do carregamento da API.
+
+### Alterações:
+1. Dentro da função `inicializarDOM()`, adicione a linha de mapeamento do elemento de dados:
+   ```javascript
+   function inicializarDOM() {
+       domElements.dataElement = document.getElementById('data'); // <- ADICIONAR ESTA LINHA
+       domElements.ventoMedio = document.getElementById('vento-medio');
+       domElements.ventoMaximo = document.getElementById('vento-maximo');
+       domElements.nuvens = document.getElementById('nuvens');
+       domElements.card = document.getElementById('card-situacao');
+       domElements.texto = document.getElementById('texto-situacao');
+   }
+   ```
+
+2. Na escuta de evento final `DOMContentLoaded`, inverta a ordem para que o preenchimento da data local ocorra imediatamente antes da consulta assíncrona externa:
+   ```javascript
+   document.addEventListener("DOMContentLoaded", () => {
+       inicializarDOM();
+       
+       // 1º: Atualiza a data do computador na tela IMEDIATAMENTE antes de consultar a API
+       if (domElements.dataElement) domElements.dataElement.textContent = new Date().toLocaleDateString('pt-BR');
+       
+       // 2º: Realiza a busca dos dados assíncronos do satélite/API
+       buscarDadosSatelite();
+       
+       setInterval(buscarDadosSatelite, CONFIG.INTERVALO_ATUALIZACAO_MS);
+   });
+   ```

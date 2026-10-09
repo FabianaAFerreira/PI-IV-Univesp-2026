@@ -1,0 +1,51 @@
+<div class="dados-grid">
+    <div class="dado-card">
+        <div class="dado-icone">📅</div>
+        <div class="dado-info">
+            <span class="dado-label">Data</span>
+            <span class="dado-valor">{{ data }}</span>
+        </div>
+    </div>
+    <div class="dado-card">
+        <div class="dado-icone">🌡️</div>
+        <div class="dado-info">
+            <span class="dado-label">Temperatura</span>
+            <span class="dado-valor">{{ temperatura }} °C</span>
+        </div>
+    </div>
+    <div class="dado-card">
+        <div class="dado-icone">🌧️</div>
+        <div class="dado-info">
+            <span class="dado-label">Chuva</span>
+            <span class="dado-valor">{{ chuva }} mm</span>
+        </div>
+    </div>
+    <div class="dado-card">
+        <div class="dado-icone">🌬️</div>
+        <div class="dado-info">
+            <span class="dado-label">Vento Médio</span>
+            <span class="dado-valor"><span id="vento-medio">{{ vento_medio }}</span> km/h</span>
+        </div>
+    </div>
+    <div class="dado-card">
+        <div class="dado-icone">🌪️</div>
+        <div class="dado-info">
+            <span class="dado-label">Rajadas Máx.</span>
+            <span class="dado-valor"><span id="vento-maximo">{{ vento_maximo }}</span> km/h</span>
+        </div>
+    </div>
+    <div class="dado-card">
+        <div class="dado-icone">🧭</div>
+        <div class="dado-info">
+            <span class="dado-label">Direção Vento</span>
+            <span class="dado-valor">{{ direcao_vento }}°</span>
+        </div>
+    </div>
+    <div class="dado-card">
+        <div class="dado-icone">☁️</div>
+        <div class="dado-info">
+            <span class="dado-label">Nuvens</span>
+            <span class="dado-valor"><span id="nuvens">--</span>%</span>
+        </div>
+    </div>
+</div>

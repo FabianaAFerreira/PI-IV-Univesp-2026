@@ -1,4 +1,5 @@
 {% extends 'interface/base.html' %}
+{% load static %}
 
 {% block titulo %}
     Início
@@ -8,40 +9,10 @@
 
     <h2 class="titulo-situacao">Situação atual da rampa</h2>
 
-    {% if situacao == "SEGURO" %}
+    <!-- Organismo: Card de Situação que inclui o Átomo/Molécula de Dados -->
+    {% include 'interface/components/card_situacao.html' %}
 
-        <div class="situacao seguro">
-
-    {% elif situacao == "ATENÇÃO" %}
-
-        <div class="situacao alerta">
-
-    {% elif situacao == "INSEGURO" %}
-
-        <div class="situacao risco">
-
-    {% endif %}
-
-        <p class="resultado">
-            {{ situacao }}
-        </p>
-
-        <div class="dados-leitura">
-
-            <p>
-                Data: {{ data }} |
-                Temperatura: {{ temperatura }} °C |
-                Chuva: {{ chuva }} mm
-            </p>
-
-            <p>
-                Vento médio: {{ vento_medio }} km/h |
-                Vento máximo: {{ vento_maximo }} km/h |
-                Direção: {{ direcao_vento }}°
-            </p>
-
-        </div>
-
-    </div>
+    <!-- Lógica de Frontend para atualização em Tempo Real -->
+    <script src="{% static 'interface/js/monitor_clima.js' %}"></script>
 
 {% endblock %}

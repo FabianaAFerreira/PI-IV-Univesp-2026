@@ -1,32 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 body {
     margin: 0;
     padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #fafafa;
+    color: #333;
 }
 
 .menu-principal {
-    height: 250px;
-    background-image: url("imagens/logo.jpg");
-    background-size: cover;
-    background-position: center;
-    border-radius: 10px;
-    position: relative;
+    height: 120px;
+    background-color: #2c3e50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .menu-links {
     position: absolute;
     top: 20px;
     left: 30px;
-
     display: flex;
-    gap: 25px;
+    gap: 20px;
 }
 
 .menu-links a {
     color: white;
     text-decoration: none;
-    font-weight: bold;
-    font-size: 20px;
+    font-size: 16px;
+    font-weight: 500;
 }
 
 .menu-links a:hover {
@@ -34,80 +36,105 @@ body {
 }
 
 .menu-principal h1 {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-
-    transform: translate(-50%, -50%);
-
     color: white;
-    font-size: 45px;
+    font-size: 32px;
     margin: 0;
-}
-
-.situacao {
-     height: 350px;
-    text-align: center;
-
-    margin: 40px 7px;
-    padding: 30px;
-
-    box-sizing: border-box;
-
-    border-radius: 10px;
-
-    background-size: cover;
-    background-position: center;
-
-    position: relative;
-}
-
-.situacao.seguro {
-    background-image:
-        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-        url("imagens/seguro.jpeg");
-}
-
-.situacao.alerta {
-    background-image:
-        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-        url("imagens/alerta.jpg");
-}
-
-.situacao.risco {
-    background-image:
-        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-        url("imagens/risco.jpg");
-}
-
-.situacao h2 {
-    margin-bottom: 20px;
-    color: white;
-}
-
-.resultado {
-    font-size: 40px;
-    font-weight: bold;
-    margin: 0;
-    color: white;
 }
 
 .titulo-situacao {
     text-align: center;
-    margin: 30px 0 20px;
+    margin: 40px 0 20px;
+    font-size: 28px;
+    font-weight: 500;
+    color: #222;
 }
 
-.dados-leitura {
-    position: absolute;
-    bottom: 20px;
-    left: 0;
-    width: 100%;
-    color: white;
-    font-size:25px;
-    font-weight: bold;
+.situacao {
+    max-width: 800px;
+    margin: 0 auto 50px;
+    padding: 30px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
     text-align: center;
+    background-color: #fff;
 }
 
-.dados-leitura p {
-    margin: 6px 0;
+.situacao.seguro {
+    border-top: 5px solid #27ae60;
+}
+
+.situacao.alerta {
+    border-top: 5px solid #f39c12;
+}
+
+.situacao.risco {
+    border-top: 5px solid #c0392b;
+}
+
+.resultado {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0 0 30px 0;
+}
+
+.situacao.seguro .resultado { color: #27ae60; }
+.situacao.alerta .resultado { color: #f39c12; }
+.situacao.risco .resultado { color: #c0392b; }
+
+/* Grid de Dados Simplificado */
+.dados-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    width: 100%;
+}
+
+.dado-card {
+    background-color: #f8f9fa;
+    border: 1px solid #eaeaea;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 180px;
+    flex: 1 1 calc(33.333% - 15px);
+}
+
+.dado-icone {
+    font-size: 24px;
+}
+
+.dado-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.dado-label {
+    font-size: 13px;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.dado-valor {
+    font-size: 18px;
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .dado-card {
+        flex: 1 1 calc(50% - 15px);
+    }
+}
+
+@media (max-width: 480px) {
+    .dado-card {
+        flex: 1 1 100%;
+    }
 }

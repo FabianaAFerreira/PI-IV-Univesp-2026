@@ -1,0 +1,18 @@
+{% if situacao == "SEGURO" %}
+    <div id="card-situacao" class="situacao seguro">
+{% elif situacao == "ATENÇÃO" %}
+    <div id="card-situacao" class="situacao alerta">
+{% elif situacao == "INSEGURO" %}
+    <div id="card-situacao" class="situacao risco">
+{% else %}
+    <div id="card-situacao" class="situacao">
+{% endif %}
+
+    <p class="resultado" id="texto-situacao">
+        {{ situacao }}
+    </p>
+
+    <!-- Slot para injetar os dados de leitura -->
+    {% include 'interface/components/dados_leitura.html' %}
+
+</div>

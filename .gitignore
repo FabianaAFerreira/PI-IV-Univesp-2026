@@ -1,7 +1,7 @@
-@"
-venv/
+﻿venv/
 __pycache__/
-*.pyc
+*.py[cod]
 .ipynb_checkpoints/
 db.sqlite3
-"@ | Set-Content .gitignore
+.env
+staticfiles/

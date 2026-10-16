@@ -1,47 +1,105 @@
-{% extends 'interface/base.html' %}
+﻿{% extends 'interface/base.html' %}
 
 {% block titulo %}
-    Início
+    InÃ­cio
 {% endblock %}
 
 {% block conteudo %}
 
-    <h2 class="titulo-situacao">Situação atual da rampa</h2>
+    <div class="cabecalho-situacao">
+        <h2 class="titulo-situacao">SituaÃ§Ã£o da rampa</h2>
 
-    {% if situacao == "SEGURO" %}
+        <form method="get" class="formulario-data">
+            <label for="data-selecionada">Data:</label>
+            <input
+                type="date"
+                id="data-selecionada"
+                name="data"
+                value="{{ data_selecionada }}"
+                required
+            >
+            <button type="submit">Consultar</button>
+        </form>
+    </div>
 
-        <div class="situacao seguro">
-
-    {% elif situacao == "ATENÇÃO" %}
-
-        <div class="situacao alerta">
-
-    {% elif situacao == "INSEGURO" %}
-
-        <div class="situacao risco">
-
-    {% endif %}
-
-        <p class="resultado">
-            {{ situacao }}
+    {% if erro %}
+        <p class="mensagem-erro">
+            {{ erro }}
         </p>
+    {% else %}
 
-        <div class="dados-leitura">
+        {% if situacao == "SEGURO" %}
+            <div class="situacao seguro">
+        {% elif situacao == "ATENÃ‡ÃƒO" %}
+            <div class="situacao alerta">
+        {% elif situacao == "INSEGURO" %}
+            <div class="situacao risco">
+        {% else %}
+            <div class="situacao">
+        {% endif %}
 
-            <p>
-                Data: {{ data }} |
-                Temperatura: {{ temperatura }} °C |
-                Chuva: {{ chuva }} mm
-            </p>
+            <div class="coluna-meteorologica coluna-esquerda">
 
-            <p>
-                Vento médio: {{ vento_medio }} km/h |
-                Vento máximo: {{ vento_maximo }} km/h |
-                Direção: {{ direcao_vento }}°
-            </p>
+                <div class="indicador-meteorologico">
+                    <span class="icone-meteorologico" aria-hidden="true">ðŸŒ¡ï¸</span>
+                    <div>
+                        <p class="nome-indicador">Temperatura mÃ©dia</p>
+                        <p class="valor-indicador">{{ temperatura }} Â°C</p>
+                    </div>
+                </div>
+
+                <div class="indicador-meteorologico">
+                    <span class="icone-meteorologico" aria-hidden="true">ðŸŒ§ï¸</span>
+                    <div>
+                        <p class="nome-indicador">Chuva</p>
+                        <p class="valor-indicador">{{ chuva }} mm</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="coluna-situacao">
+                {% if situacao == "SEGURO" %}
+                    <span class="icone-situacao" aria-hidden="true">âœ“</span>
+                {% elif situacao == "ATENÃ‡ÃƒO" %}
+                    <span class="icone-situacao" aria-hidden="true">âš </span>
+                {% elif situacao == "INSEGURO" %}
+                    <span class="icone-situacao" aria-hidden="true">âœ•</span>
+                {% endif %}
+
+                <p class="resultado">{{ situacao }}</p>
+            </div>
+
+            <div class="coluna-meteorologica coluna-direita">
+
+                <div class="indicador-meteorologico">
+                    <span class="icone-meteorologico" aria-hidden="true">ðŸ’¨</span>
+                    <div>
+                        <p class="nome-indicador">Vento mÃ©dio</p>
+                        <p class="valor-indicador">{{ vento_medio }} km/h</p>
+                    </div>
+                </div>
+
+                <div class="indicador-meteorologico">
+                    <span class="icone-meteorologico" aria-hidden="true">ðŸŒ¬ï¸</span>
+                    <div>
+                        <p class="nome-indicador">Vento mÃ¡ximo</p>
+                        <p class="valor-indicador">{{ vento_maximo }} km/h</p>
+                    </div>
+                </div>
+
+                <div class="indicador-meteorologico">
+                    <span class="icone-meteorologico" aria-hidden="true">ðŸ§­</span>
+                    <div>
+                        <p class="nome-indicador">DireÃ§Ã£o predominante</p>
+                        <p class="valor-indicador">{{ direcao_vento }}Â°</p>
+                    </div>
+                </div>
+
+            </div>
 
         </div>
 
-    </div>
+    {% endif %}
 
 {% endblock %}

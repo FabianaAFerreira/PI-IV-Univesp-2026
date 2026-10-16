@@ -1,113 +1,492 @@
+/* ==================================================
+   1. CONFIGURAÇÃO GERAL
+================================================== */
+
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
     padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f3f6f8;
+    color: #243447;
 }
 
+
+/* ==================================================
+   2. CABEÇALHO DO SITE
+================================================== */
+
 .menu-principal {
-    height: 250px;
-    background-image: url("imagens/logo.jpg");
+    min-height: 230px;
+    background-image:
+        linear-gradient(
+            rgba(7, 29, 45, 0.25),
+            rgba(7, 29, 45, 0.4)
+        ),
+        url("imagens/logo.jpg");
     background-size: cover;
     background-position: center;
-    border-radius: 10px;
+    border-radius: 0 0 16px 16px;
     position: relative;
+    box-shadow: 0 4px 14px rgba(20, 40, 55, 0.15);
 }
 
 .menu-links {
     position: absolute;
-    top: 20px;
-    left: 30px;
-
+    top: 22px;
+    left: 28px;
     display: flex;
-    gap: 25px;
+    gap: 24px;
 }
 
 .menu-links a {
     color: white;
     text-decoration: none;
-    font-weight: bold;
-    font-size: 20px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: opacity 0.2s ease;
 }
 
 .menu-links a:hover {
-    text-decoration: underline;
+    opacity: 0.75;
 }
 
 .menu-principal h1 {
     position: absolute;
-    top: 50%;
+    top: 40%;
     left: 50%;
-
     transform: translate(-50%, -50%);
-
     color: white;
-    font-size: 45px;
-    margin: 0;
-}
-
-.situacao {
-     height: 350px;
+    font-size: clamp(30px, 4vw, 46px);
     text-align: center;
-
-    margin: 40px 7px;
-    padding: 30px;
-
-    box-sizing: border-box;
-
-    border-radius: 10px;
-
-    background-size: cover;
-    background-position: center;
-
-    position: relative;
-}
-
-.situacao.seguro {
-    background-image:
-        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-        url("imagens/seguro.jpeg");
-}
-
-.situacao.alerta {
-    background-image:
-        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-        url("imagens/alerta.jpg");
-}
-
-.situacao.risco {
-    background-image:
-        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-        url("imagens/risco.jpg");
-}
-
-.situacao h2 {
-    margin-bottom: 20px;
-    color: white;
-}
-
-.resultado {
-    font-size: 40px;
-    font-weight: bold;
     margin: 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+
+/* ==================================================
+   3. INFORMAÇÕES DA LOCALIDADE
+================================================== */
+
+.informacoes-local {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 90%;
     color: white;
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.nome-local {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.coordenadas-local {
+    font-size: 14px;
+}
+
+
+/* ==================================================
+   4. TÍTULO E SELETOR DE DATA
+================================================== */
+
+.cabecalho-situacao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    margin: 28px 16px 24px;
 }
 
 .titulo-situacao {
     text-align: center;
-    margin: 30px 0 20px;
+    margin: 32px 16px 24px;
+    font-size: 25px;
+    color: #18384b;
 }
 
+.cabecalho-situacao .titulo-situacao {
+    margin: 0;
+}
+
+.formulario-data {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.formulario-data label {
+    font-weight: 600;
+    color: #18384b;
+}
+
+.formulario-data input[type="date"] {
+    min-height: 40px;
+    padding: 8px 10px;
+    border: 1px solid #bdcbd4;
+    border-radius: 8px;
+    background: white;
+    color: #243447;
+    font: inherit;
+}
+
+.formulario-data button {
+    min-height: 40px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #18384b;
+    color: white;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.formulario-data button:hover {
+    background: #28566d;
+}
+
+
+/* ==================================================
+   5. CARD PRINCIPAL DA PREVISÃO
+================================================== */
+
+.situacao {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+
+    min-height: 340px;
+    margin: 24px auto;
+    padding: 28px;
+
+    width: calc(100% - 48px);
+    max-width: 1400px;
+
+    border-radius: 16px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+
+    box-shadow: 0 8px 24px rgba(23, 42, 56, 0.16);
+    text-align: initial;
+    color: white;
+}
+
+
+/* ==================================================
+   6. IMAGENS DE FUNDO POR SITUAÇÃO
+================================================== */
+
+.situacao.seguro {
+    background-image: url("imagens/seguro.jpeg");
+}
+
+.situacao.alerta {
+    background-image: url("imagens/alerta.jpg");
+}
+
+.situacao.risco {
+    background-image: url("imagens/risco.jpg");
+}
+
+
+/* ==================================================
+   7. COLUNAS LATERAIS DO CARD
+================================================== */
+
+.coluna-meteorologica {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+    min-width: 0;
+}
+
+.coluna-esquerda {
+    align-items: flex-start;
+}
+
+.coluna-direita {
+    justify-self: end;
+    width: 100%;
+    max-width: 280px;
+    align-items: flex-start;
+}
+
+
+/* ==================================================
+   8. INDICADORES METEOROLÓGICOS E ÍCONES
+================================================== */
+
+.indicador-meteorologico {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+}
+
+.icone-meteorologico {
+    font-size: 30px;
+    flex-shrink: 0;
+}
+
+.nome-indicador {
+    margin: 0 0 5px;
+    font-size: 14px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.valor-indicador {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+
+/* ==================================================
+   9. SITUAÇÃO CENTRALIZADA
+================================================== */
+
+.coluna-situacao {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    min-width: 0;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.coluna-situacao .icone-situacao {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.coluna-situacao .resultado {
+    margin: 12px 0 6px;
+    font-size: clamp(22px, 2.5vw, 34px);
+    font-weight: 800;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.legenda-situacao {
+    margin: 0;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* Cores da situação central */
+
+.seguro .coluna-situacao {
+    color: #18794e;
+}
+
+.alerta .coluna-situacao {
+    color: #a16207;
+}
+
+.risco .coluna-situacao {
+    color: #b91c1c;
+}
+
+
+/* ==================================================
+   10. ESTILO DO TEXTO DA SITUAÇÃO
+================================================== */
+
+.resultado {
+    display: inline-block;
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin: 4px 0 28px;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+
+/* ==================================================
+   11. ESTILOS ANTIGOS DOS DADOS METEOROLÓGICOS
+================================================== */
+
 .dados-leitura {
-    position: absolute;
-    bottom: 20px;
-    left: 0;
+    position: static;
     width: 100%;
     color: white;
-    font-size:25px;
-    font-weight: bold;
+    font-size: 16px;
+    font-weight: 500;
     text-align: center;
 }
 
 .dados-leitura p {
-    margin: 6px 0;
+    display: inline-block;
+    margin: 7px;
+    padding: 13px 17px;
+    min-width: 190px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.13);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+
+/* ==================================================
+   12. MENSAGENS DE ERRO
+================================================== */
+
+.mensagem-erro {
+    max-width: 900px;
+    margin: 24px auto;
+    padding: 18px 22px;
+    border-left: 5px solid #bd3434;
+    border-radius: 8px;
+    background: #fff0f0;
+    color: #8b2222;
+}
+
+
+/* ==================================================
+   13. RESPONSIVIDADE — TABLETS E CELULARES
+================================================== */
+
+@media (max-width: 700px) {
+
+    /* Card: uma coluna por linha */
+
+    .situacao {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 20px;
+    }
+
+    /* Situação no topo, centralizada */
+
+    .coluna-situacao {
+        grid-row: 1;
+        padding: 12px 0 20px;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+    }
+
+    /* Indicadores meteorológicos */
+
+    .coluna-esquerda,
+    .coluna-direita {
+        align-items: stretch;
+        justify-self: stretch;
+        max-width: none;
+    }
+
+    .coluna-meteorologica {
+        gap: 18px;
+    }
+
+    .indicador-meteorologico {
+        justify-content: flex-start;
+    }
+}
+
+
+/* ==================================================
+   14. RESPONSIVIDADE — CELULARES PEQUENOS
+================================================== */
+
+@media (max-width: 600px) {
+
+    /* Cabeçalho */
+
+    .menu-principal {
+        min-height: 190px;
+    }
+
+    .menu-links {
+        top: 16px;
+        left: 16px;
+        gap: 16px;
+    }
+
+    .menu-links a {
+        font-size: 14px;
+    }
+
+    .menu-principal h1 {
+        top: 38%;
+        width: 95%;
+        font-size: 30px;
+    }
+
+    .informacoes-local {
+        top: 54%;
+        width: 95%;
+    }
+
+    .nome-local {
+        font-size: 16px;
+    }
+
+    .coordenadas-local {
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    /* Título */
+
+    .titulo-situacao {
+        font-size: 21px;
+        margin-top: 26px;
+    }
+
+    /* Cabeçalho da situação e data */
+
+    .cabecalho-situacao {
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .formulario-data {
+        justify-content: center;
+    }
+
+    /* Card */
+
+    .situacao {
+        width: calc(100% - 24px);
+        margin: 18px auto;
+        padding: 24px 14px;
+        min-height: 0;
+    }
+
+    .resultado {
+        margin-bottom: 18px;
+    }
+
+    /* Compatibilidade com o layout antigo */
+
+    .dados-leitura p {
+        display: block;
+        min-width: 0;
+        margin: 10px 0;
+        padding: 12px;
+        font-size: 15px;
+    }
 }

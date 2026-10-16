@@ -1,28 +1,47 @@
 {% load static %}
 
 <!DOCTYPE html>
+
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
 
-    <title>
-        {% block titulo %}
-            Monitor de Voo Livre
-        {% endblock %}
-    </title>
-    <link rel="stylesheet" href="{% static 'interface/style.css' %}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+    {% block titulo %}
+        Monitor de Voo Livre
+    {% endblock %}
+</title>
+
+<link rel="stylesheet" href="{% static 'interface/style.css' %}">
+
 </head>
 
 <body>
 
-    <header class="menu-principal">
-         <h1>ItaqueriAero</h1>
-    </header>
+<header class="menu-principal">
+    <h1>ItaqueriAero</h1>
 
-    <main>
-        {% block conteudo %}
-        {% endblock %}
-    </main>
+    {% if nome_local %}
+        <div class="informacoes-local">
+            <span class="nome-local">{{ nome_local }}</span>
+
+            {% if latitude != None and longitude != None %}
+                <span class="coordenadas-local">
+                    Latitude: {{ latitude|floatformat:6 }}
+                    &nbsp; | &nbsp;
+                    Longitude: {{ longitude|floatformat:6 }}
+                </span>
+            {% endif %}
+        </div>
+    {% endif %}
+</header>
+
+<main>
+    {% block conteudo %}
+    {% endblock %}
+</main>
 
 </body>
 </html>

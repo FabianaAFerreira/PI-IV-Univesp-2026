@@ -11,7 +11,7 @@ from django.shortcuts import render
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MODELO_PATH = BASE_DIR / "modelo" / "modelo_xgboost_novo.pkl"
+MODELO_PATH = BASE_DIR / "modelo" /  "modelo_xgboost_itaqueriaero.pkl"
 
 URL_OPEN_METEO = "https://api.open-meteo.com/v1/forecast"
 
@@ -29,7 +29,11 @@ PARAMETROS_OPEN_METEO = {
     "forecast_days": 1,
 }
 
-modelo = joblib.load(MODELO_PATH)
+pacote_modelo = joblib.load(MODELO_PATH)
+
+modelo = pacote_modelo["modelo"]
+label_encoder = pacote_modelo["label_encoder"]
+ATRIBUTOS_MODELO = pacote_modelo["atributos"]
 
 
 def inicio(request):
@@ -174,22 +178,16 @@ def inicio(request):
             ],
         }])
 
-        previsao = int(modelo.predict(amostra)[0])
+        amostra = amostra[ATRIBUTOS_MODELO]
 
-        classes = {
-            0: "ATENÇÃO",
-            1: "INSEGURO",
-            2: "SEGURO",
-        }
+        previsao = modelo.predict(amostra).astype(int)
+        situacao = label_encoder.inverse_transform(previsao)[0]
 
         contexto.update({
             "nome_local": nome_local,
             "latitude": latitude,
             "longitude": longitude,
-            "situacao": classes.get(
-                previsao,
-                f"Classe não identificada ({previsao})",
-            ),
+            "situacao": situacao,
             "data": entrada["data"],
             "temperatura": entrada["temperatura_media_c"],
             "chuva": entrada["chuva_mm"],
